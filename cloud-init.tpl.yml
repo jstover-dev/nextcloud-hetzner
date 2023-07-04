@@ -1,0 +1,105 @@
+#cloud-config
+
+fs_setup:
+  - label: storage
+    filesystem: ${storage_format}
+    device: ${storage_device}
+    partition: auto
+
+# Storage volume device and mountpoint is passed in via Terraform. Bind mount is for predictability
+mounts:
+  - [ ${storage_device}, ${storage_mountpoint}, ${storage_format}, 'discard,defaults']
+  - [ ${storage_mountpoint}, '/mnt/data', 'none', 'defaults,bind']
+
+users:
+  - name: nextcloud
+    groups: docker
+    system: true
+    homedir: /var/lib/nextcloud
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ${deployer_public_key}    # Terraform provisioner will use and then remove this key
+      - ${admin_public_key}
+
+apt:
+  sources_list: |
+      deb http://deb.debian.org/debian $RELEASE main contrib non-free
+      deb http://deb.debian.org/debian $RELEASE-updates main contrib non-free
+      deb http://security.debian.org/debian-security $RELEASE-security main contrib non-free
+  sources:
+    docker.list:
+      source: deb [arch=amd64] https://download.docker.com/linux/debian $RELEASE stable
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+package_update: true
+package_upgrade: true
+packages:
+  - borgbackup
+  - cifs-utils
+  - docker-ce
+  - docker-ce-cli
+  - docker-compose
+
+write_files:
+  - path: /var/lib/nextcloud/docker-compose.yml
+    content: |
+      version: '3.7'
+      
+      volumes:
+        nextcloud_aio_mastercontainer:
+          name: nextcloud_aio_mastercontainer
+
+      services:
+        nextcloud:
+          image: nextcloud/all-in-one:latest
+          container_name: nextcloud-aio-mastercontainer
+          restart: always
+          ports:
+            - "80:80"
+            - "8080:8080"
+            - "8443:8443"
+          volumes:
+            - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+          environment:
+            - NEXTCLOUD_DATADIR=/mnt/data/nextcloud
+
+  - path: /root/.smbpasswd-backup
+    permissions: '0400'
+    content: |
+      username=${borg_cifs_username}
+      password=${borg_cifs_password}
+
+  - path: /etc/systemd/system/mnt-backup.mount
+    content: |
+      [Unit]
+      Description=StorageBox CIFS mount (borg)
+      
+      [Mount]
+      What=${borg_cifs_location}
+      Where=/mnt/backup
+      Type=cifs
+      Options=rw,credentials=/root/.smbpasswd-backup,file_mode=0750,dir_mode=0750,uid=33,gid=0,noperm
+      DirectoryMode=0750
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/mnt-backup.automount
+    content: |
+      [Unit]
+      Description=StorageBox CIFS mount (borg)
+
+      [Automount]
+      Where=/mnt/backup
+
+      [Install]
+      WantedBy=multi-user.target
+
+
+runcmd:
+  - systemctl daemon-reload
+  - systemctl enable --now mnt-backup.automount
+  - mkdir /mnt/data/nextcloud
+  - chown nextcloud:nextcloud /mnt/data/nextcloud
+  - echo 'Provisioned by Terraform.' > /etc/motd

@@ -1,0 +1,44 @@
+# Hetzner config
+# ----------------------------------------------------------------------------
+hetzner_cloud_token = "..."
+
+
+# Cloudflare config
+# ----------------------------------------------------------------------------
+cloudflare_api_token = "..."
+cloudflare_zone      = "example.com"
+
+
+# ZeroTier config
+# ----------------------------------------------------------------------------
+zerotier_central_api_token = "..."
+zerotier_network_id        = "..."
+
+
+# Host config
+# ----------------------------------------------------------------------------
+hostname          = "nc"
+image_name        = "debian-11"
+cpu_arch          = "x86"
+instance_type     = "cx11"
+instance_location = "fsn1"
+storage_size_gb   = 50
+
+# User config
+# ----------------------------------------------------------------------------
+authorized_hosts = {
+  mumen : "ssh-ed25519 AAAA..."
+}
+
+deployer_ssh_key = {
+  private_base64 = "..."
+  public         = "ssh-ed25519 AAAA..."
+}
+
+# Backup config
+# ----------------------------------------------------------------------------
+borg_backup_cifs = {
+  path         = "//example.com/aio-backup"
+  smb_username = "fred"
+  smb_password = "pa55w0rd"
+}
