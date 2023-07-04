@@ -2,6 +2,20 @@
 
 Terraform configuration for deploying a Nextcloud AIO instance to an existing Hetzner Cloud project.
 
+This will also provide:
+- Offsite backup to a CIFS share (or restore from existing AIO backup)
+- DNS A Record
+- Joining to a ZeroTier network
+
+## Requirements
+
+- API key/tokens for existing resources:
+    - [Hetzner Cloud](https://www.hetzner.com/cloud) project
+    - [Cloudflare](https://www.cloudflare.com/) account and zone
+    - [ZeroTier](https://www.zerotier.com) account and network
+  - [Terraform Cloud](https://app.terraform.io/) account _(optional)_
+- Existing CIFS share for Nextcloud AIO backups
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) (>= v1.2)
 
 ## Setup
 
@@ -50,6 +64,10 @@ rm nextcloud-deploy-key nextcloud-deploy-key.pub
 ```
 
 ### Configure Infrastructure
+
+These variables can be configured in _either_:
+- Local `terraform.tfvars` file
+- Terraform Cloud workspace
 
 ```terraform
 # Hetzner config
@@ -112,7 +130,7 @@ $ terraform apply
 
 After deployment, the Nextcloud AIO master container will be running but the administration ports will still be firewalled.
 
-When you are ready to configure the new instance, log in to Hetzner cloud and apply the `allow-nextcloud-admin` firewall to the newly created server.
+**When you are ready to configure the new instance**, log in to Hetzner cloud and apply the `allow-nextcloud-admin` firewall to the newly created server.
 
 Navigate to `https://nc.example.com:8080` to perform the initial setup.
 
