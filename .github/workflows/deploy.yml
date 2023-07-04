@@ -1,0 +1,23 @@
+name: "Deploy"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tf-tests:
+    name: "Terraform Tests"
+    uses: ./.github/workflows/tf-tests.yml
+    secrets: inherit
+
+  tf-plan:
+    name: "Terraform Plan"
+    uses: ./.github/workflows/tf-plan.yml
+    secrets: inherit
+
+  tf-apply:
+    name: "Terraform Apply"
+    uses: ./.github/workflows/tf-apply.yml
+    needs: [tf-tests, tf-plan]
+    secrets: inherit
