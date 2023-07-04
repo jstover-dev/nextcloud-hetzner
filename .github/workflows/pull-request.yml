@@ -15,7 +15,7 @@ jobs:
     secrets: inherit
 
   done:
-    name: "PR checking complete"
+    name: "PR checks complete"
     needs: [tf-tests, tf-plan]
     runs-on: ubuntu-latest
     steps:
