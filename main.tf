@@ -11,7 +11,7 @@ terraform {
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 3.15"
+      version = "~> 4.9"
     }
     zerotier = {
       source  = "zerotier/zerotier"
