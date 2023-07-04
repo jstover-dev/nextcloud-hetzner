@@ -13,3 +13,10 @@ jobs:
     name: "Terraform Plan"
     uses: ./.github/workflows/tf-plan.yml
     secrets: inherit
+
+  done:
+    name: "PR checking complete"
+    needs: [tf-tests, tf-plan]
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"

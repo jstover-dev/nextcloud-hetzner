@@ -21,3 +21,10 @@ jobs:
     uses: ./.github/workflows/tf-apply.yml
     needs: [tf-tests, tf-plan]
     secrets: inherit
+
+  done:
+    name: "Deployment complete"
+    needs: [tf-apply]
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"
