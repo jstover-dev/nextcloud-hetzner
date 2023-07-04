@@ -1,8 +1,5 @@
 name: "Terraform Plan"
-
-on:
-  workflow_call:
-  pull_request:
+on: workflow_call
 
 env:
   TF_CLOUD_ORGANIZATION: "${{ vars.TF_CLOUD_ORGANIZATION }}"

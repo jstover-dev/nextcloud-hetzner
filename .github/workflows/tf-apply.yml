@@ -1,8 +1,5 @@
 name: "Terraform Apply"
-on:
-  push:
-    branches:
-      - master
+on: workflow_call
 
 env:
   TF_CLOUD_ORGANIZATION: "${{ vars.TF_CLOUD_ORGANIZATION }}"
@@ -11,17 +8,7 @@ env:
   CONFIG_DIRECTORY: "./"
 
 jobs:
-  tf-tests:
-    name: 'Terraform Tests'
-    uses: ./.github/workflows/tf-tests.yml
-    secrets: inherit
-
-  tf-plan:
-    name: "Terraform Plan"
-    uses: ./.github/workflows/tf-plan.yml
-    secrets: inherit
-
-  apply:
+  tf-apply:
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     needs: [tf-tests, tf-plan]
