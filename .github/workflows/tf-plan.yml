@@ -1,6 +1,7 @@
 name: "Terraform Plan"
 
 on:
+  workflow_call:
   pull_request:
 
 env:
@@ -10,7 +11,7 @@ env:
   CONFIG_DIRECTORY: "./"
 
 jobs:
-  terraform:
+  tf-plan:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
     permissions:

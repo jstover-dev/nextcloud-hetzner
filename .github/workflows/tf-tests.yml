@@ -1,13 +1,11 @@
 name: 'Terraform Unit Tests'
 
 on:
+  workflow_call:
   pull_request:
-  push:
-    branches:
-      - master
 
 jobs:
-  terraform-unit-tests:
+  tf-tests:
     name: 'Terraform Unit Tests'
     runs-on: ubuntu-latest
 
