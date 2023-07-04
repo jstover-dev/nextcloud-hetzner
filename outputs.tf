@@ -10,9 +10,10 @@ output "hostname" {
   value = "${var.hostname}.${var.cloudflare_zone}"
 }
 
-output "urls" {
-  value = {
-    admin = "https://${var.hostname}.${var.cloudflare_zone}:8443"
-    admin_self_signed = "https://${var.hostname}.${var.cloudflare_zone}:8080"
-  }
+output "aio_setup" {
+  value = "https://${var.hostname}.${var.cloudflare_zone}:8443"
+}
+
+output "aio_self_signed" {
+  value = "https://${var.hostname}.${var.cloudflare_zone}:8080"
 }

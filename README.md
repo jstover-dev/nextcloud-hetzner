@@ -99,10 +99,14 @@ borg_backup_cifs = {
 ```
 
 
-## Deploy
+## Deployment
 
 
 ```shell
+# Initialise Terraform
+$ terraform init
+
+# Deploy application
 $ terraform apply
 ```
 
