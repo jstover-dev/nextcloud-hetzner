@@ -10,10 +10,11 @@ This will also provide:
 ## Requirements
 
 - API key/tokens for existing resources:
-    - [Hetzner Cloud](https://www.hetzner.com/cloud) project
-    - [Cloudflare](https://www.cloudflare.com/) account and zone
-    - [ZeroTier](https://www.zerotier.com) account and network
+  - [Hetzner Cloud](https://www.hetzner.com/cloud) project
+  - [Cloudflare](https://www.cloudflare.com/) account and zone
+  - [ZeroTier](https://www.zerotier.com) account and network
   - [Terraform Cloud](https://app.terraform.io/) account _(optional)_
+  - [Zulip](https://zulip.com/) account and [Bot](https://spaceant.zulipchat.com/help/add-a-bot-or-integration) user _(optional)_
 - Existing CIFS share for Nextcloud AIO backups
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) (>= v1.2)
 
@@ -119,6 +120,7 @@ borg_backup_cifs = {
 
 ## Deployment
 
+### Provisioning
 
 ```shell
 # Initialise Terraform
@@ -135,3 +137,29 @@ After deployment, the Nextcloud AIO master container will be running but the adm
 Navigate to `https://nc.example.com:8080` to perform the initial setup.
 
 Navigate to `https://nc.example.com:8443` to automatically provision an SSL certificate.
+
+
+### Deprovisioning
+
+At least one resource has the `prevent_destroy` lifecylce rule set.
+This means that by default the instance cannot be destroyed by a simple `terraform destroy` command.
+
+If you are sure, _really_ sure, that you want to deprovision everything **including the Nextcloud data volume**,
+then edit the following files/resources and set `prevent_destroy` to `false`. Afterwards, you can run `terraform destroy` as usual.
+- `storage.tf :: hcloud_volume.data`
+
+
+**NOTE: THE CIFS BACKUP LOCATION WILL BE LEFT UNTOUCHED AND CAN BE USED TO RESTORE A NEW INSTANCE**
+
+
+### Deployment Notifications
+
+A Zulip message can be sent whenever a deployment succeeds by configuring the following variables in GitHub:
+
+| Name              | Context   | Description                   |
+|-------------------|-----------|-------------------------------|
+| ZULIP_BOT_API_KEY | secrets   | API Key for the bot           |
+| ZULIP_BOT_EMAIL   | secrets   | Email address of the bot user |
+| ZULIP_ORG         | variables | Zulip organisation name       |
+
+See the [Zulip Send Message Action](https://github.com/zulip/github-actions-zulip/blob/main/send-message/README.md) documentation for more details
