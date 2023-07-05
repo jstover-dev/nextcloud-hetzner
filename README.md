@@ -135,3 +135,16 @@ After deployment, the Nextcloud AIO master container will be running but the adm
 Navigate to `https://nc.example.com:8080` to perform the initial setup.
 
 Navigate to `https://nc.example.com:8443` to automatically provision an SSL certificate.
+
+
+## Deprovisioning
+
+At least one resource has the `prevent_destroy` lifecylce rule set.
+This means that by default the instance cannot be destroyed by a simple `terraform destroy` command.
+
+If you are sure, _really_ sure, that you want to deprovision everything **including the Nextcloud data volume**,
+then edit the following files/resources and set `prevent_destroy` to `false`. Afterwards, you can run `terraform destroy` as usual.
+- `storage.tf :: hcloud_volume.data`
+
+
+**NOTE: THE CIFS BACKUP LOCATION WILL BE LEFT UNTOUCHED AND CAN BE USED TO RESTORE A NEW INSTANCE**
