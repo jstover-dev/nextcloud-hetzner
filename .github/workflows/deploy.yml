@@ -27,4 +27,16 @@ jobs:
     needs: [tf-apply]
     runs-on: ubuntu-latest
     steps:
-      - run: "true"
+      - name: Send notification
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        if: vars.ZULIP_ORG != ''
+        with:
+         api-key: ${{ secrets.ZULIP_BOT_API_KEY }}
+         email: ${{ secrets.ZULIP_BOT_EMAIL }}
+         organization-url: https://${{ vars.ZULIP_ORG }}.zulipchat.com
+         type: stream
+         to: github
+         topic: ${{ github.event.repository.name }}
+         content: |
+          [${{ github.event.repository.name }}](${{ github.server_url }}/${{ github.repository }}) was deployed to production:
+          [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
