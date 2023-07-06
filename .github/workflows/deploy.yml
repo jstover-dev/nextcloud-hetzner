@@ -16,6 +16,14 @@ jobs:
     uses: ./.github/workflows/tf-plan.yml
     secrets: inherit
 
+  notify-start:
+    name: 'Notify Zulip (start)'
+    uses: ./.github/workflows/zulip-notify.yml
+    needs: [tf-plan]
+    secrets: inherit
+    with:
+      message: Starting deployment of [${{ github.event.repository.name }}](${{ github.server_url }}/${{ github.repository }}) ...
+
   tf-apply:
     name: "Terraform Apply"
     uses: ./.github/workflows/tf-apply.yml
@@ -24,19 +32,10 @@ jobs:
 
   done:
     name: "Deployment complete"
+    uses: ./.github/workflows/zulip-notify.yml
     needs: [tf-apply]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send notification
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
-        if: vars.ZULIP_ORG != ''
-        with:
-         api-key: ${{ secrets.ZULIP_BOT_API_KEY }}
-         email: ${{ secrets.ZULIP_BOT_EMAIL }}
-         organization-url: https://${{ vars.ZULIP_ORG }}.zulipchat.com
-         type: stream
-         to: github
-         topic: ${{ github.event.repository.name }}
-         content: |
-          [${{ github.event.repository.name }}](${{ github.server_url }}/${{ github.repository }}) was deployed to production:
-          [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+    secrets: inherit
+    with:
+      message: |
+        [${{ github.event.repository.name }}](${{ github.server_url }}/${{ github.repository }}) was deployed to production:
+        [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})

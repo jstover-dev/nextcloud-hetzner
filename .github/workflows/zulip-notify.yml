@@ -1,0 +1,24 @@
+name: "Zulip Notifications"
+
+on:
+  workflow_call:
+    inputs:
+      message:
+        required: true
+        type: string
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification
+        uses: zulip/github-actions-zulip/send-message@v1
+        if: vars.ZULIP_ORG != ''
+        with:
+         api-key: ${{ secrets.ZULIP_BOT_API_KEY }}
+         email: ${{ secrets.ZULIP_BOT_EMAIL }}
+         organization-url: https://${{ vars.ZULIP_ORG }}.zulipchat.com
+         type: stream
+         to: github
+         topic: ${{ github.event.repository.name }}
+         content: ${{ inputs.message }}
