@@ -34,6 +34,11 @@ jobs:
           configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
           plan_only: true
 
+      - name: Annotate Step
+        run: |
+          echo "${{ steps.plan-run.outputs.run_message }}" >> $GITHUB_STEP_SUMMARY
+          echo "[${{ steps.plan-run.outputs.run_link }}](${{ steps.plan-run.outputs.run_link }})" >> $GITHUB_STEP_SUMMARY
+
       - name: Get Plan Output
         uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0
         id: plan-output

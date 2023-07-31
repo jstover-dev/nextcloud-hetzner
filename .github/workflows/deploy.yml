@@ -17,9 +17,9 @@ jobs:
     secrets: inherit
 
   notify-start:
-    name: 'Notify Zulip (start)'
+    name: "Notify Zulip (start)"
     uses: ./.github/workflows/zulip-notify.yml
-    needs: [tf-plan]
+    needs: [tf-tests, tf-plan]
     secrets: inherit
     with:
       message: Starting deployment of [${{ github.event.repository.name }}](${{ github.server_url }}/${{ github.repository }}) ...
@@ -31,7 +31,7 @@ jobs:
     secrets: inherit
 
   done:
-    name: "Deployment complete"
+    name: "Notify Zulip (complete)"
     uses: ./.github/workflows/zulip-notify.yml
     needs: [tf-apply]
     secrets: inherit
