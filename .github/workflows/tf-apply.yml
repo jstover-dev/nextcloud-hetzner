@@ -26,10 +26,18 @@ jobs:
 
       - name: Create Apply Run
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
-        id: apply-run
+        id: create-run
         with:
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+
+      - name: Annotate workflow
+        run: |
+          echo "::notice::WTerraform Cloud Run: [${{ steps.create-run.outputs.run_id }}](${{ steps.create-run.outputs.run_link }})"
+
+      - name: Annotate Step
+        run: |
+          echo 'STerraform Cloud Run: [${{ steps.create-run.outputs.run_id }}](${{ steps.create-run.outputs.run_link }})' >> $GITHUB_STEP_SUMMARY
 
       - name: Apply
         uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
